@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBlog</title>
+  </head>
+  <style>
+  *, *:after {
+    margin: 0 auto;
+    text-align: center;
+  }
+  .head-title {
+    text-decoration: none;
+    font-size: 45px;
+    color: black;
+  }
+  .new-post {
+    font-size: 28px;
+    text-decoration: none;
+  }
+  .new-post:hover {
+    text-decoration: underline;
+    text-decoration-style: dashed;
+  }
+  .new-post:visited {
+    color: #9370DB;
+  }
+  </style>
+  <body>
+    <a href="/" class="head-title">Cristian's Blog</a>
+    <br>
+    <br>
+    <a href="/newpost" class="new-post">Make a new post</a>
+    <br>
+    <br>
+    <hr>
+    {% block content %}
+    {% endblock %}
+  </body>
+</html>

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+  <style>
+  *, *:after {
+    margin: 0 auto;
+    text-align: center;
+  }
+  .blog-section {
+    width: 100%;
+    padding-top: 15px;
+  }
+  .blog-title {
+    font-weight: bold;
+    font-size: 22px;
+    color: black;
+    text-decoration: none;
+  }
+  .blog-title:hover {
+    text-decoration: underline;
+  }
+  .blog-content {
+    font-size: 16px;
+  }
+  .blog-date {
+    font-size: 8px;
+  }
+  </style>
+  {% for b in blogs %}
+  <div class="blog-section">
+    <div><a href="id={{b.key().id()}}" class="blog-title">{{b.subject}}</a></div>
+    <div class="blog-content">{{b.content.replace("\n", "<br>") | safe}}</div>
+    <div class="blog-date">{{b.created}}</div>
+  </div>
+  {% endfor %}
+  {% endblock %}

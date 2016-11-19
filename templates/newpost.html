@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+*, *:after {
+  margin: 0 auto;
+}
+.content {
+  width: 100%;
+  padding: 15px;
+}
+.error {
+  color: red;
+}
+.title {
+  font-weight: bold;
+}
+input, textarea {
+  text-align: left;
+  border: 1px lightgray ridge;
+  border-radius: 3px;
+  box-shadow: 10px;
+}
+.submit {
+  margin: 0 auto;
+  border-radius: 4px;
+  width: 56px;
+}
+</style>
+<div class="content">
+  <form method="post">
+    <label>
+      <div class="title">Subject:</div>
+      <input type="text" name="subject" value="{{subject}}">
+    </label>
+
+    <!-- <label>
+      <div>Subject:</div>
+      <input type="text" name="subject" value="{{subject}}">
+    </label> -->
+
+    <label>
+      <div class="title">Content:</div>
+      <textarea name="content" rows="20" cols="60">{{content}}</textarea>
+    </label>
+
+    <div class="error">
+      {{error}}
+    </div>
+    <input class="submit" type="submit" value="Submit!">
+  </form>
+</div>
+
+{% endblock %}

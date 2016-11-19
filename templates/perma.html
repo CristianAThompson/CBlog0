@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.blog-section {
+  width: 100%;
+  padding-top: 15px;
+}
+.blog-title {
+  font-weight: bold;
+  font-size: 22px;
+  color: black;
+  text-decoration: none;
+}
+.blog-title:hover {
+  text-decoration: underline;
+}
+.blog-content {
+  font-size: 16px;
+}
+.blog-date {
+  font-size: 8px;
+}
+</style>
+<div class="blog-section">
+  <div class="blog-title">{{post.subject}}</div>
+  <div class="blog-content">{{post.content.replace('\n', '<br>') | safe}}</div>
+  <div class="blog-date">{{post.created}}</div>
+</div>
+{% endblock %}
