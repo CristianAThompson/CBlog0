@@ -18,20 +18,24 @@
   .new-post {
     font-size: 28px;
     text-decoration: none;
+    color: black;
   }
   .new-post:hover {
     text-decoration: underline;
     text-decoration-style: dashed;
-  }
-  .new-post:visited {
     color: #9370DB;
   }
   </style>
   <body>
-    <a href="/" class="head-title">Cristian's Blog</a>
-    <br>
-    <br>
-    <a href="/newpost" class="new-post">Make a new post</a>
+    {% if username %}
+      <a href="/blog" class="head-title">{{username + "'s"}} Blog</a>
+      <br>
+      <a class="new-post" href="/logout">Logout</a>
+      <br>
+      <a href="/newpost" class="new-post">Make a new post</a>
+    {% else %}
+      <h1><a class="head-title" href="/blog">Blog</a></h1>
+    {% endif %}
     <br>
     <br>
     <hr>

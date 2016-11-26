@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  *, *:after {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  input {
+    border-radius: 5px;
+  }
+</style>
+<div class="fifty">
+  <h2>Sign-in to your account here:</h2>
+  <form method="post">
+    <table>
+      <tr>
+        <td>
+          Username:
+        </td>
+        <td>
+          <input name="username" value="{{username}}"></input>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Password:
+        </td>
+        <td>
+          <input name="password" type="password"></input>
+        </td>
+      </tr>
+      {% if error %}
+        <tr>
+          <td>
+            {{error}}
+          </td>
+        </tr>
+      {% endif %}
+    </table>
+    <input type="submit" value="Sign-In" class="submit">
+    <br>
+    <br>
+    <div>
+      If you don't have an account sign-up <a href="/signup">here</a>.
+    </div>
+  </form>
+</div>
+{% endblock %}

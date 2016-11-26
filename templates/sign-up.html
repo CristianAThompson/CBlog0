@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  *, *:after {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  input {
+    border-radius: 5px;
+  }
+</style>
+<div class="fifty">
+  <h2>Sign-up for an account here:</h2>
+  <form method="post">
+    <table>
+      <tr>
+        <td>
+          Username:
+        </td>
+        <td>
+          <input name="username" value="{{username}}"></input>
+        </td>
+        <td>
+          {{nerror}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Password:
+        </td>
+        <td>
+          <input name="password" type="password"></input>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Re-enter Password:
+        </td>
+        <td>
+          <input name="verify" type="password"></input>
+        </td>
+        <td>
+          {{perror}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Email(Optional):
+        </td>
+        <td>
+          <input name="email" value="{{email}}"></input>
+        </td>
+        <td>
+          {{eerror}}
+        </td>
+      </tr>
+    </table>
+    <input type="submit" value="Sign-Up!" class="submit">
+  </form>
+</div>
+{% endblock %}
