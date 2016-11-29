@@ -20,10 +20,64 @@
 .blog-date {
   font-size: 8px;
 }
+.edit {
+  font-size: 14px;
+  color: gray;
+  text-decoration: none;
+}
+.edit:hover {
+  text-decoration: underline;
+  color: #9370DB;
+}
+.error {
+  color: red;
+}
+.mod-section {
+  text-align: right;
+}
 </style>
-<div class="blog-section">
-  <div class="blog-title">{{post.subject}}</div>
-  <div class="blog-content">{{post.content.replace('\n', '<br>') | safe}}</div>
-  <div class="blog-date">{{post.created}}</div>
-</div>
+{% if post.submitted_user == post_owner %}
+  <div class="mod-section">
+    <a class="edit" href="/edit/id={{post.key().id()}}">Edit</a>
+    <a class="edit" href="/delete/id={{post.key().id()}}">Delete</a>
+  </div>
+{% endif %}
+  <div class="blog-section">
+    <div class="blog-title">{{post.subject}}</div>
+    <div class="blog-content">{{post.content.replace('\n', '<br>') | safe}}</div>
+    <div class="blog-date">{{post.created}}</div>
+  </div>
+
+  {% for c in comments %}
+    {% if c.comment_username == username %}
+    <div class="mod-section">
+      <a class="edit" href="/editcomment/id={{c.key().id()}}">Edit</a>
+      <a class="edit" href="/commentdelete/id={{c.key().id()}}">Delete</a>
+    </div>
+    {% endif %}
+    <div class="blog-section">
+      <div class="blog-title">{{c.comment_username}}</div>
+      <div class="blog-content">{{c.comment_content.replace('\n', '<br>') | safe}}</div>
+      <div class="blog-date">{{c.created}}</div>
+      <div class="error">{{comment_error}}</div>
+    </div>
+  {% endfor %}
+  {% if not no_user %}
+  <br>
+  <br>
+  <hr>
+  <form method="post">
+    <label>
+      <div class="title">Comment:</div>
+      <textarea name="comment_content" rows="5" cols="20"></textarea>
+    </label>
+    <br>
+    <input class="submit" type="submit" value="Submit Comment">
+  </form>
+  {% else %}
+  <br>
+  <hr>
+  <div class="">{{no_user}}</div>
+  {% endif %}
+
 {% endblock %}

@@ -8,7 +8,7 @@
   <style>
   *, *:after {
     margin: 0 auto;
-    text-align: center;
+    text-align: center
   }
   .head-title {
     text-decoration: none;
@@ -25,21 +25,29 @@
     text-decoration-style: dashed;
     color: #9370DB;
   }
+  .wrapper {
+    max-width: 700px;
+  }
   </style>
   <body>
     {% if username %}
+    <div class="head">
       <a href="/blog" class="head-title">{{username + "'s"}} Blog</a>
       <br>
       <a class="new-post" href="/logout">Logout</a>
       <br>
       <a href="/newpost" class="new-post">Make a new post</a>
+    </div>
+
     {% else %}
       <h1><a class="head-title" href="/blog">Blog</a></h1>
     {% endif %}
     <br>
     <br>
     <hr>
-    {% block content %}
-    {% endblock %}
+    <div class="wrapper">
+      {% block content %}
+      {% endblock %}
+    </div>
   </body>
 </html>

@@ -1,13 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
   <style>
-  *, *:after {
-    margin: 0 auto;
-    text-align: center;
-  }
   .blog-section {
     width: 100%;
-    padding-top: 15px;
   }
   .blog-title {
     font-weight: bold;
@@ -24,12 +19,30 @@
   .blog-date {
     font-size: 8px;
   }
+  .edit {
+    font-size: 14px;
+    color: gray;
+    text-decoration: none;
+  }
+  .edit:hover {
+    text-decoration: underline;
+    color: #9370DB;
+  }
+  .mod-section {
+    text-align: right;
+  }
   </style>
   {% for b in blogs %}
-  <div class="blog-section">
-    <div><a href="id={{b.key().id()}}" class="blog-title">{{b.subject}}</a></div>
-    <div class="blog-content">{{b.content.replace("\n", "<br>") | safe}}</div>
-    <div class="blog-date">{{b.created}}</div>
-  </div>
+    <div class="mod-section">
+      <a class="edit" href="/edit/id={{b.key().id()}}">Edit</a>
+      <a class="edit" href="/delete/id={{b.key().id()}}">Delete</a>
+    </div>
+    <div class="blog-section">
+      <br>
+      <div><a href="id={{b.key().id()}}" class="blog-title">{{b.subject}}</a></div>
+      <div class="blog-content">{{b.content.replace("\n", "<br>") | safe}}</div>
+      <div class="blog-date">{{b.last_modified}}</div>
+    </div>
+  <br>
   {% endfor %}
   {% endblock %}

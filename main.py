@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import webapp2, jinja2, os, random, string, hmac, hashlib, re
+import webapp2, jinja2, os, random, string, hmac, hashlib, re, time
 
 from google.appengine.ext import db
 
@@ -123,6 +123,13 @@ class User(db.Model):
         if u and valid_pw(username, pw, u.password):
             return u
 
+class Comment(db.Model):
+    comment_username = db.StringProperty(required = True)
+    comment_content = db.TextProperty(required = True)
+    created = db.DateTimeProperty(auto_now_add = True)
+    post_id = db.IntegerProperty(required = True)
+    parent_id = db.IntegerProperty(required = True)
+
 class MainHandler(Handler):
 
     def get(self):
@@ -133,18 +140,40 @@ class MainHandler(Handler):
         else:
             self.redirect('/login')
 
-class PostPageHandler(Handler):
+class PermaHandler(Handler):
+
     def get(self, post_id):
         key = db.Key.from_path('Blog', int(post_id))
         post = db.get(key)
+        comments = Comment.all().filter('post_id =', int(post_id))
 
         if not post:
             self.error(404)
             return
         if self.user:
-            self.render('perma.html', post = post, username = self.user.username)
+            post_owner = make_secure(self.user.username)
+            self.render('perma.html', post = post, username = self.user.username, comments = comments, post_owner = post_owner)
         else:
-            self.render('perma.html', post = post)
+            no_user = "Please Sign In To Comment!"
+            self.render('perma.html', post = post, comments = comments, no_user = no_user)
+
+    def post(self, post_id):
+        key = db.Key.from_path('Blog', int(post_id))
+        post = db.get(key)
+        comments = Comment.all().filter('post_id=', int(post_id))
+
+        username = self.user.username
+        content = self.request.get('comment_content')
+
+        if content and self.user:
+            comment = Comment(comment_username = username, comment_content = content, post_id = int(post_id), parent_id = int(post.key().id()))
+            comment.put()
+            time.sleep(.3)
+            self.redirect('/id=%s' % str(post.key().id()))
+        else:
+            cerror = "Make sure you added a comment before you submitted."
+            self.render('perma.html', post = post, username = username, comments = comments, comment_error = cerror)
+
 
 class NewPostHandler(Handler):
     def get(self):
@@ -261,12 +290,113 @@ class Logout(Handler):
         self.logout()
         self.redirect('/blog')
 
+class EditPage(Handler):
+
+    def get(self, post_id):
+
+        key = db.Key.from_path('Blog', int(post_id))
+        post = db.get(key)
+
+        if post.submitted_user == make_secure(self.user.username):
+            if not post:
+                self.error(404)
+                return
+            if self.user:
+                self.render('edit.html', post = post, username = self.user.username)
+        else:
+            self.redirect('/blog')
+
+    def post(self, post_id):
+
+        key = db.Key.from_path('Blog', int(post_id))
+        post = db.get(key)
+
+        subject = self.request.get('subject')
+        content = self.request.get('content')
+
+        if subject and content:
+            post.content = content
+            post.put()
+            time.sleep(.2)
+            self.redirect('/id=%s' % str(post.key().id()))
+        else:
+            error = "Make sure you included both fields."
+            self.render('edit.html', post = post, error = error)
+
+class EditComment(Handler):
+
+    def get(self, post_id):
+
+        key = db.Key.from_path('Comment', int(post_id))
+        post = db.get(key)
+        if self.user:
+            if post.comment_username == self.user.username:
+                self.render('editcomment.html', post = post, username = self.user.username)
+            else:
+                self.redirect('/id=%s' % post.parent_id)
+        else:
+            self.redirect('/id=%s' % post.parent_id)
+
+    def post(self, post_id):
+
+        key = db.Key.from_path('Comment', int(post_id))
+        post = db.get(key)
+
+        content = self.request.get('content')
+
+        if content:
+            post.comment_content = content
+            post.put()
+            time.sleep(.2)
+            self.redirect('/id=%s' % post.parent_id)
+        else:
+            error = "Make sure you have content in the box."
+            self.render('editcomment.html', post = post, error = error, username = self.user.username)
+
+
+class Delete(Handler):
+
+    def get(self, post_id):
+
+        key = db.Key.from_path('Blog', int(post_id))
+        post = db.get(key)
+
+        if post.submitted_user == make_secure(self.user.username):
+            post.delete()
+            time.sleep(.2)
+            self.redirect('/blog')
+        else:
+            self.redirect('/blog')
+
+class DeleteComment(Handler):
+
+    def get(self, post_id):
+        blog_id = self.request.get('id')
+
+
+        key = db.Key.from_path('Comment', int(post_id))
+        post = db.get(key)
+
+        if self.user:
+            if post.comment_username == self.user.username:
+                post.delete()
+                time.sleep(.2)
+                self.redirect('/id=%s' % post.parent_id)
+            else:
+                self.redirect('/id=%s' % post.parent_id)
+        else:
+            self.redirect('/id=%s' % post.parent_id)
+
 
 app = webapp2.WSGIApplication([('/', DefaultPageHandler),
                                 ('/blog', MainHandler),
                                 ('/newpost', NewPostHandler),
-                                ('/id=([0-9]+)', PostPageHandler),
+                                ('/id=([0-9]+)', PermaHandler),
+                                ('/edit/id=([0-9]+)', EditPage),
+                                ('/editcomment/id=([0-9]+)', EditComment),
                                 ('/signup', RegisterPage),
                                 ('/login', LoginPage),
                                 ('/logout', Logout),
+                                ('/delete/id=([0-9]+)', Delete),
+                                ('/commentdelete/id=([0-9]+)', DeleteComment),
                                 ('/welcome', WelcomeHandler)], debug=True)

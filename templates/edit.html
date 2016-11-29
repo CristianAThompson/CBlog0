@@ -7,10 +7,8 @@
 .content {
   width: 100%;
   padding: 15px;
-  text-align: center;
 }
 .error {
-  display: block;
   color: red;
 }
 .title {
@@ -26,26 +24,22 @@ input, textarea {
 .submit {
   margin: 0 auto;
   border-radius: 4px;
-  width: 56px;
+  width: 105px;
 }
 </style>
 <div class="content">
   <form method="post">
     <label>
       <div class="title">Subject:</div>
-      <input type="text" name="subject" value="{{subject}}">
+      <input type="text" name="subject" value="{{post.subject}}">
     </label>
 
     <label>
       <div class="title">Content:</div>
-      <textarea name="content" rows="20" cols="60">{{content}}</textarea>
+      <textarea name="content" rows="20" cols="60">{{post.content}}</textarea>
     </label>
 
-    <div class="error">
-      {{error}}
-    </div>
-    <input class="submit" type="submit" value="Submit!">
+    <input class="submit" type="submit" value="Submit Changes">
   </form>
 </div>
-
 {% endblock %}
