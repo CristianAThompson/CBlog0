@@ -95,6 +95,8 @@ class Blog(db.Model):
     submitted_user = db.StringProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
+    likes = db.StringProperty()
+    like_total = db.IntegerProperty()
 
 class User(db.Model):
     username = db.StringProperty(required = True)
@@ -154,7 +156,7 @@ class PermaHandler(Handler):
             post_owner = make_secure(self.user.username)
             self.render('perma.html', post = post, username = self.user.username, comments = comments, post_owner = post_owner)
         else:
-            no_user = "Please Sign In To Comment!"
+            no_user = "Please Sign In To Comment or Like this post!"
             self.render('perma.html', post = post, comments = comments, no_user = no_user)
 
     def post(self, post_id):
@@ -304,7 +306,7 @@ class EditPage(Handler):
             if self.user:
                 self.render('edit.html', post = post, username = self.user.username)
         else:
-            self.redirect('/blog')
+            self.redirect('/id=%s' % str(post.key().id()))
 
     def post(self, post_id):
 
@@ -387,6 +389,40 @@ class DeleteComment(Handler):
         else:
             self.redirect('/id=%s' % post.parent_id)
 
+class LikePost(Handler):
+
+    def get(self, post_id):
+
+        key = db.Key.from_path('Blog', int(post_id))
+        post = db.get(key)
+        users = User.all().get()
+
+        if self.user:
+            if post.likes:
+                if make_secure(self.user.username) != post.submitted_user:
+                    if self.user.username not in post.likes:
+                        post.likes += self.user.username
+                        post.like_total +=1
+                        post.put()
+                    elif self.user.username in post.likes:
+                        post.likes = str(post.likes).replace(self.user.username, "")
+                        post.like_total -=1
+                        post.put()
+            else:
+                if make_secure(self.user.username) != post.submitted_user:
+                    post.likes = self.user.username
+                    post.like_total = 1
+                    post.put()
+
+        self.redirect('/id=%s' % str(post.key().id()))
+
+
+
+
+
+
+
+
 
 app = webapp2.WSGIApplication([('/', DefaultPageHandler),
                                 ('/blog', MainHandler),
@@ -394,6 +430,7 @@ app = webapp2.WSGIApplication([('/', DefaultPageHandler),
                                 ('/id=([0-9]+)', PermaHandler),
                                 ('/edit/id=([0-9]+)', EditPage),
                                 ('/editcomment/id=([0-9]+)', EditComment),
+                                ('/like/id=([0-9]+)', LikePost),
                                 ('/signup', RegisterPage),
                                 ('/login', LoginPage),
                                 ('/logout', Logout),

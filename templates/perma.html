@@ -47,6 +47,22 @@
     <div class="blog-content">{{post.content.replace('\n', '<br>') | safe}}</div>
     <div class="blog-date">{{post.created}}</div>
   </div>
+  <br>
+  {% if not no_user %}
+    {% if post.submitted_user != post_owner %}
+      {% if username not in post.likes %}
+        <div class="">This post has {{post.like_total}} Likes</div>
+        <a href="/like/id={{post.key().id()}}">Like</a>
+        </div>
+      {% elif username in post.likes %}
+        <div class="">This post has {{post.like_total}} Likes</div>
+        <a href="/like/id={{post.key().id()}}">Remove Like</a>
+        </div>
+      {% endif %}
+    {% elif post.submitted_user == post_owner %}
+      <div class="">This post has {{post.like_total}} Likes</div>
+    {% endif %}
+  {% endif %}
 
   {% for c in comments %}
     {% if c.comment_username == username %}
