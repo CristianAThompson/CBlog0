@@ -51,16 +51,20 @@
   {% if not no_user %}
     {% if post.submitted_user != post_owner %}
       {% if username not in post.likes %}
-        <div class="">This post has {{post.like_total}} Likes</div>
+        <div class="">This post has {{post.like_total}} Likes!</div>
         <a href="/like/id={{post.key().id()}}">Like</a>
         </div>
       {% elif username in post.likes %}
-        <div class="">This post has {{post.like_total}} Likes</div>
+        <div class="">This post has {{post.like_total}} Likes!</div>
         <a href="/like/id={{post.key().id()}}">Remove Like</a>
         </div>
       {% endif %}
     {% elif post.submitted_user == post_owner %}
-      <div class="">This post has {{post.like_total}} Likes</div>
+      {% if post.likes %}
+        <div class="">This post has {{post.like_total}} Likes!</div>
+      {% else %}
+        <div class="">This post doesn't have any likes yet!</div>
+      {% endif %}
     {% endif %}
   {% endif %}
 
