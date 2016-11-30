@@ -50,14 +50,19 @@
   <br>
   {% if not no_user %}
     {% if post.submitted_user != post_owner %}
-      {% if username not in post.likes %}
-        <div class="">This post has {{post.like_total}} Likes!</div>
+      {% if post.likes %}
+        {% if username not in post.likes %}
+          <div class="">This post has {{post.like_total}} Likes!</div>
+          <a href="/like/id={{post.key().id()}}">Like</a>
+          </div>
+        {% elif username in post.likes %}
+          <div class="">This post has {{post.like_total}} Likes!</div>
+          <a href="/like/id={{post.key().id()}}">Remove Like</a>
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="">Be the first to like this post!</div>
         <a href="/like/id={{post.key().id()}}">Like</a>
-        </div>
-      {% elif username in post.likes %}
-        <div class="">This post has {{post.like_total}} Likes!</div>
-        <a href="/like/id={{post.key().id()}}">Remove Like</a>
-        </div>
       {% endif %}
     {% elif post.submitted_user == post_owner %}
       {% if post.likes %}
