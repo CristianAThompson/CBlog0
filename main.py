@@ -188,8 +188,7 @@ class PermaHandler(Handler):
         post = db.get(key)
         comments = Comment.all().filter('post_id=', int(post_id))
 
-        users = User.all().filter('username =', self.user.username)
-        if self.user and users != None:
+        if self.user:
             username = self.user.username
             content = self.request.get('comment_content')
 
@@ -205,6 +204,9 @@ class PermaHandler(Handler):
             else:
                 cerror = "Make sure you added a comment before you submitted."
                 self.render('perma.html', post = post, username = username, comments = comments, comment_error = cerror)
+        else:
+            self.redirect('/id=%s' % str(post.key().id()))
+
 
 # Defines the functionality of the New Post Page
 class NewPostHandler(Handler):
@@ -215,8 +217,7 @@ class NewPostHandler(Handler):
             self.redirect('/')
 
     def post(self):
-        users = User.all().filter('username =', self.user.username)
-        if self.user and users != None:
+        if self.user:
             subject = self.request.get('subject')
             content = self.request.get('content')
 
@@ -227,6 +228,9 @@ class NewPostHandler(Handler):
             else:
                 error = "Make sure you included both fields."
                 self.render('newpost.html', subject = subject, content = content, error = error)
+        else:
+            self.redirect('/')
+
 
 # Regular expressions for comparison when creating a new user
 uname = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
@@ -380,29 +384,31 @@ class EditPage(Handler):
         key = db.Key.from_path('Blog', int(post_id))
         post = db.get(key)
 
-        users = User.all().filter('username =', self.user.username)
-        if make_secure(self.user.username) == post.submitted_user and users != None:
-            # Capture subject and content from submission
-            subject = self.request.get('subject')
-            content = self.request.get('content')
+        if self.user:
+            if post.submitted_user == make_secure(self.user.username):
+                # Capture subject and content from submission
+                subject = self.request.get('subject')
+                content = self.request.get('content')
 
-            if not post:
-                self.error(404)
-                return
+                if not post:
+                    self.error(404)
+                    return
 
-            # If both subject and content are present re-define the current post content
-            # with the newly submitted content and place it back within the Blog entity
-            # then redirect to the perma-link
-            if subject and content:
-                post.content = content
-                post.put()
-                time.sleep(.2)
-                self.redirect('/id=%s' % str(post.key().id()))
-            # If both subject and content aren't present define an error and re-render
-            # the form with that error
-            else:
-                error = "Make sure you included both fields."
-                self.render('edit.html', post = post, error = error)
+                # If both subject and content are present re-define the current post content
+                # with the newly submitted content and place it back within the Blog entity
+                # then redirect to the perma-link
+                if subject and content:
+                    post.content = content
+                    post.put()
+                    time.sleep(.2)
+                    self.redirect('/id=%s' % str(post.key().id()))
+                # If both subject and content aren't present define an error and re-render
+                # the form with that error
+                else:
+                    error = "Make sure you included both fields."
+                    self.render('edit.html', post = post, error = error)
+        else:
+            self.redirect('/id=%s' % str(post.key().id()))
 
 # Defines the edit comment functionality
 class EditComment(Handler):
@@ -450,6 +456,8 @@ class EditComment(Handler):
             else:
                 error = "Make sure you have content in the box."
                 self.render('editcomment.html', post = post, error = error, username = self.user.username)
+        else:
+            self.redirect('/id=%s' % post.parent_id)
 
 # Retrieve the specific blog post by ID and if the submitted user and the hashed
 # currently logged in user match then use the built in delete function on the entity
