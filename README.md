@@ -14,7 +14,7 @@ Alternatively you can click [Here](http://cblog89.appspot.com/login) to see the 
 
 ### How to download the files
 
-* You can click [here](https://github.com/CristianAThompson/CBlog0/archive/master.zip) to download the zip directly, or if you prefer to use git bash to clone the repository the address for cloning the repository is found when you click the green button that says "Clone of download" on the github page that is linked above.
+* You can click [here](https://github.com/CristianAThompson/CBlog0/archive/master.zip) to download the zip directly, or if you prefer to use git bash to clone the repository the address for cloning the repository is found when you click the green button that says "Clone or download" on the github page that is linked above.
 
 #### Steps to open the files locally and start the server
 *Note that these steps are for the launcher with inside of Windows, although the steps within the interface should be similar cross-platform.*
