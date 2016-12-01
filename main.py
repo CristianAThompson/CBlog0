@@ -173,7 +173,7 @@ class PermaHandler(Handler):
 
         # If the id isn't valid return a 404 error
         if not post:
-            self.error(404)
+            self.render('404.html')
             return
         if self.user:
             post_owner = make_secure(self.user.username)
@@ -193,7 +193,7 @@ class PermaHandler(Handler):
             content = self.request.get('comment_content')
 
             if not post:
-                self.error(404)
+                self.render('404.html')
                 return
             # If content is present and is a signed in user then creates new comment entity with the user submitted information
             if content and self.user:
@@ -369,7 +369,7 @@ class EditPage(Handler):
         # if they are render an edit form with the content of the post passed in,
         # if they don't match redirect to the perma-link of the post
         if not post:
-            self.error(404)
+            self.render('404.html')
             return
         if self.user:
             if post.submitted_user == make_secure(self.user.username):
@@ -391,7 +391,7 @@ class EditPage(Handler):
                 content = self.request.get('content')
 
                 if not post:
-                    self.error(404)
+                    self.render('404.html')
                     return
 
                 # If both subject and content are present re-define the current post content
@@ -420,7 +420,7 @@ class EditComment(Handler):
         post = db.get(key)
 
         if not post:
-            self.error(404)
+            self.render('404.html')
             return
 
         # If there is a user and that user is the person who created the comment
@@ -442,7 +442,7 @@ class EditComment(Handler):
         post = db.get(key)
 
         if not post:
-            self.error(404)
+            self.render('404.html')
             return
 
         if self.user and self.user.username == post.comment_username:
@@ -469,6 +469,10 @@ class Delete(Handler):
         key = db.Key.from_path('Blog', int(post_id))
         post = db.get(key)
 
+        if not post:
+            self.render('404.html')
+            return
+
         if self.user:
             if post.submitted_user == make_secure(self.user.username):
                 post.delete()
@@ -476,6 +480,8 @@ class Delete(Handler):
                 self.redirect('/blog')
             else:
                 self.redirect('/blog')
+        else:
+            self.redirect('/id=%s' % post.key().id())
 
 # Retrieve the comment entry by ID and if the comment creator and the currently
 # logged in user match then use the built in delete to remove the entry and redirect
@@ -486,6 +492,10 @@ class DeleteComment(Handler):
 
         key = db.Key.from_path('Comment', int(post_id))
         post = db.get(key)
+
+        if not post:
+            self.render('404.html')
+            return
 
         if self.user:
             if post.comment_username == self.user.username:
@@ -505,6 +515,10 @@ class LikePost(Handler):
         # Retrieve the specific blog post
         key = db.Key.from_path('Blog', int(post_id))
         post = db.get(key)
+
+        if not post:
+            self.render('404.html')
+            return
 
         # If the user is signed in and not the post owner and there are already
         # likes then add current user to the likes entry and add one to the likes
