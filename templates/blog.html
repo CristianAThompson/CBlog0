@@ -16,6 +16,10 @@
   .blog-content {
     font-size: 16px;
   }
+  .blog-creator {
+    font-size: 18px;
+    color: gray;
+  }
   .blog-date {
     font-size: 8px;
   }
@@ -33,12 +37,15 @@
   }
   </style>
   {% for b in blogs %}
+    {% if b.submitted_user == post_owner %}
     <div class="mod-section">
       <a class="edit" href="/edit/id={{b.key().id()}}">Edit</a>
       <a class="edit" href="/delete/id={{b.key().id()}}">Delete</a>
     </div>
+    {% endif %}
     <div class="blog-section">
       <br>
+      <div class="blog-creator">{{b.submitted_user.split('|')[0]}}</div>
       <div><a href="id={{b.key().id()}}" class="blog-title">{{b.subject}}</a></div>
       <div class="blog-content">{{b.content.replace("\n", "<br>") | safe}}</div>
       <div class="blog-date">{{b.last_modified}}</div>

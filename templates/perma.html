@@ -17,6 +17,10 @@
 .blog-content {
   font-size: 16px;
 }
+.blog-creator {
+  font-size: 18px;
+  color: gray;
+}
 .blog-date {
   font-size: 8px;
 }
@@ -43,6 +47,7 @@
   </div>
 {% endif %}
   <div class="blog-section">
+    <div class="blog-creator">{{post.submitted_user.split('|')[0]}}</div>
     <div class="blog-title">{{post.subject}}</div>
     <div class="blog-content">{{post.content.replace('\n', '<br>') | safe}}</div>
     <div class="blog-date">{{post.created}}</div>
