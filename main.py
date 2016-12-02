@@ -203,6 +203,22 @@ class MainHandler(Handler):
         else:
             self.redirect('/login')
 
+# Defines the page for displaying only your own past
+
+class MyPostsHandler(Handler):
+
+    def get(self, user_name):
+        if self.user:
+            # .filter('submitted_user =', userid) - to be used later
+            userid = make_secure(self.user.username)
+            blogs = Blog.all().filter(
+            'submitted_user =', userid).order('-created')
+            post_owner = make_secure(self.user.username)
+            self.render('blog.html', blogs=blogs, username=self.user.username,
+                        post_owner=post_owner)
+        else:
+            self.redirect('/login')
+
 # Defines the perma link post pages
 
 
@@ -654,6 +670,7 @@ class LikePost(Handler):
 
 app = webapp2.WSGIApplication([('/', DefaultPageHandler),
                                ('/blog', MainHandler),
+                               ('/blog/([a-zA-Z]+)', MyPostsHandler),
                                ('/newpost', NewPostHandler),
                                ('/id=([0-9]+)', PermaHandler),
                                ('/edit/id=([0-9]+)', EditPage),
